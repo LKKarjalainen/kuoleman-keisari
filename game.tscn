@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://clm6g6pceqxxu"]
+
+[ext_resource type="Script" uid="uid://ba6d4iylr4n1y" path="res://game.gd" id="1_80nbo"]
+[ext_resource type="Texture2D" uid="uid://bs0dwjg061i3y" path="res://korttitaka.jpg" id="2_e2o6t"]
+
+[node name="Game" type="Node2D" unique_id=1317857700]
+script = ExtResource("1_80nbo")
+
+[node name="Keskusta" type="Node2D" parent="."]
+position = Vector2(576, 320)
+
+[node name="Korttitaka" type="Sprite2D" parent="Keskusta" unique_id=568111639]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_e2o6t")
+
+[node name="Nostakortti1" type="Button" parent="Keskusta" unique_id=269374112]
+offset_left = -64.0
+offset_top = -144.0
+offset_right = 64.0
+offset_bottom = -80.0
+offset_transform_enabled = true
+offset_transform_rotation = 3.1415927
+theme_override_font_sizes/font_size = 20
+text = "Nosta kortti"
+
+[node name="Nostakortti2" type="Button" parent="Keskusta" unique_id=1659421952]
+offset_left = -64.0
+offset_top = 80.0
+offset_right = 64.0
+offset_bottom = 144.0
+theme_override_font_sizes/font_size = 20
+text = "Nosta kortti"
+
+[node name="Nostakortti3" type="Button" parent="Keskusta" unique_id=1051358142]
+offset_left = -152.0
+offset_top = -32.0
+offset_right = -24.0
+offset_bottom = 32.0
+offset_transform_enabled = true
+offset_transform_rotation = 1.5707964
+theme_override_font_sizes/font_size = 20
+text = "Nosta kortti"
+
+[node name="Nostakortti4" type="Button" parent="Keskusta" unique_id=1405477941]
+offset_left = 24.0
+offset_top = -32.0
+offset_right = 152.0
+offset_bottom = 32.0
+offset_transform_enabled = true
+offset_transform_rotation = 4.712389
+theme_override_font_sizes/font_size = 20
+text = "Nosta kortti"
