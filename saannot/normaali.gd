@@ -33,11 +33,11 @@ func laske_straffit(vuoro: int, pelaajien_kortit: Array) -> Array[String]:
 		straffit[vuoro] = str(_suurin_arvo(pelaajien_kortit))
 		return straffit
 
-	# Ässä: jos naapurilla on ässä nostaja saa shotin.
-	if kortti.arvo == 14:
-		var vasen_ässä: bool = vasen_kortti != null and vasen_kortti.arvo == 14
-		var oikea_ässä: bool = oikea_kortti != null and oikea_kortti.arvo == 14
-		if vasen_ässä or oikea_ässä:
+	# Kakkonen: jos naapurilla on 2 nostaja saa shotin.
+	if kortti.arvo == 2:
+		var vasen_2: bool = vasen_kortti != null and vasen_kortti.arvo == 2
+		var oikea_2: bool = oikea_kortti != null and oikea_kortti.arvo == 2
+		if vasen_2 or oikea_2:
 			straffit[vuoro] = "shotti"
 			return straffit
 
@@ -54,6 +54,11 @@ func laske_straffit(vuoro: int, pelaajien_kortit: Array) -> Array[String]:
 	if ketju.size() > 1:
 		for i in ketju:
 			straffit[i] = str(pelaajien_kortit[i].arvo)
+
+	for k in pelaajien_kortit:
+		if k != null and k.arvo == 2:
+			for i in straffit.size():
+				straffit[i] = str(int(straffit[i])*2)
 
 	return straffit
 

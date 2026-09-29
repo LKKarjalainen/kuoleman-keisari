@@ -4,6 +4,7 @@ var pelaajien_määrä: int = 1
 
 const KORTIN_KOKO := Vector2(95, 142)
 const REUNAN_VARA := Vector2(110, 90)
+const VUORON_VÄRI := Color(1.0, 0.8, 0.2)
 
 const SÄÄNNÖT := ["normaali", "tupla"]
 
@@ -21,6 +22,7 @@ func _aseta_pelaajat() -> void:
 	for i in pelaajien_määrä:
 		var pelaaja := Node2D.new()
 		pelaaja.name = "Pelaaja%d" % (i + 1)
+		pelaaja.add_child(_luo_korostus())
 		pelaaja.add_child(_luo_korttipaikka())
 		pelaaja.add_child(_luo_nimi(i + 1))
 		pelaaja.add_child(_luo_straffi())
@@ -30,6 +32,7 @@ func _aseta_pelaajat() -> void:
 		pelaajien_kortit.append(null)
 
 	_asettele()
+	_korosta_vuoro()
 
 # Sijoittaa pakan ruudun keskelle ja pelaajat ellipsille sen ympärille.
 func _asettele() -> void:
@@ -57,6 +60,43 @@ func _luo_korttipaikka() -> Panel:
 	paikka.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	paikka.add_theme_stylebox_override("panel", tyyli)
 	return paikka
+
+# Keltainen kehys kortin ympärillä sille, jonka vuoro on nostaa. Kehys on korttia
+# vähän isompi ja sen alla, joten se näkyy myös kun paikalla on jo kortti.
+func _luo_korostus() -> Panel:
+	const REUNUS := 8.0
+
+	var tyyli := StyleBoxFlat.new()
+	tyyli.bg_color = Color(VUORON_VÄRI, 0.25)
+	tyyli.border_color = VUORON_VÄRI
+	tyyli.set_border_width_all(4)
+	tyyli.set_corner_radius_all(12)
+
+	var korostus := Panel.new()
+	korostus.name = "Korostus"
+	korostus.size = KORTIN_KOKO + Vector2(REUNUS, REUNUS) * 2
+	korostus.position = -korostus.size / 2
+	korostus.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	korostus.add_theme_stylebox_override("panel", tyyli)
+	korostus.hide()
+
+	# Hidas sykkivä vilkkuminen, jotta vuoron huomaa pöydän toiseltakin puolelta
+	var tween := korostus.create_tween().set_loops()
+	tween.tween_property(korostus, "modulate:a", 0.4, 0.6).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(korostus, "modulate:a", 1.0, 0.6).set_trans(Tween.TRANS_SINE)
+	return korostus
+
+# Näyttää korostuksen ja keltaisen nimen vain vuorossa olevalla pelaajalla.
+# Jos vuorossa ei ole ketään (esim. peli loppui), korostus poistetaan kaikilta.
+func _korosta_vuoro(korostettava: int = vuoro) -> void:
+	for i in pelaajat.size():
+		var on_vuorossa := i == korostettava
+		pelaajat[i].get_node("Korostus").visible = on_vuorossa
+		var nimi: Label = pelaajat[i].get_node("Nimi")
+		if on_vuorossa:
+			nimi.add_theme_color_override("font_color", VUORON_VÄRI)
+		else:
+			nimi.remove_theme_color_override("font_color")
 
 func _luo_nimi(numero: int) -> Label:
 	const KORKEUS := 24.0
@@ -91,6 +131,7 @@ func _nosta_kortti() -> void:
 	_näytä_straffit(straffit)
 
 	vuoro = (vuoro + 1) % pelaajat.size()
+	_korosta_vuoro()
 
 	if pakka.is_empty():
 		_lopeta_peli()
@@ -115,7 +156,7 @@ func _luo_straffi() -> Label:
 func _näytä_straffit(straffit: Array[String]) -> void:
 	for i in pelaajat.size():
 		var teksti: Label = pelaajat[i].get_node("Straffi")
-		if straffit[i] == "":
+		if straffit[i] == "" or straffit[i] == str(0):
 			teksti.hide()
 			continue
 		teksti.text = straffit[i]
@@ -124,6 +165,7 @@ func _näytä_straffit(straffit: Array[String]) -> void:
 
 func _lopeta_peli() -> void:
 	$Keskusta/Korttitaka.hide()
+	_korosta_vuoro(-1)
 	for nappi in nostonapit:
 		nappi.disabled = true
 
